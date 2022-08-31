@@ -37,6 +37,7 @@ insert into Departamento (IdDepto, NomeDepto, Gerente, Divisao, Local) values ('
 /*******************************************************************************************/
 INSERT INTO Empregado (IdEmpregado,NomeEmpregado, IdDepto, Cargo, Tempo_Emp, Salario, Comissao)VALUES ('1', 'Carlos', '1', 'Chefe', '1', '1200.00', '500.00');
 INSERT INTO Empregado (IdEmpregado,NomeEmpregado, IdDepto, Cargo, Tempo_Emp, Salario, Comissao)VALUES ('14', 'Carlon', '1', 'Chefe', '1', '900.00', '30.00');
+INSERT INTO Empregado (IdEmpregado,NomeEmpregado, IdDepto, Cargo, Tempo_Emp, Salario, Comissao)VALUES ('15', 'Carlone', '1', 'Chefe', '1', '100.00', '30.00');
 INSERT INTO Empregado (IdEmpregado,NomeEmpregado, IdDepto, Cargo, Tempo_Emp, Salario, Comissao)VALUES ('2', 'Felipe', '2', 'ATEND', '2', '1200.00', '500.00');
 INSERT INTO Empregado (IdEmpregado,NomeEmpregado, IdDepto, Cargo, Tempo_Emp, Salario, Comissao)VALUES ('3', 'Ramon', '3', 'GER', '3', '1500.00', '600.00');
 INSERT INTO Empregado (IdEmpregado,NomeEmpregado, IdDepto, Cargo, Tempo_Emp, Salario, Comissao)VALUES ('4', 'Ana', '4', 'GER', '4', '1500.00', '600.00');
@@ -140,6 +141,8 @@ empregados com salário maior que 2.000 ou comissão maior que 800.
 Apresenta o resultado classificado em ordem crescente de departamento e em
 cada departamento, em ordem decrescente de salario.*/
 select NomeEmpregado, Salario, Comissao, Salario + Comissao as RemuneracaoTotal from Empregado where (Salario > 2000) or (Comissao > 800) group by IdDepto order by IdDepto;
+
+select d.NomeDepto, e.NomeEmpregado, e.Salario, Salario + Comissao as RemuneracaoTotal from Empregado e inner join Departamento d on d.IdDepto = e.IdDepto order by d.NomeDepto, e.Salario desc;
 /*******************************************************************************************/
 /*******************************************************************************************/
 /*18. Lista o maior salário, o menor salário e a média dos salários de
@@ -159,7 +162,8 @@ select Cargo,COUNT(Cargo) as QtdEmpregadosPorCargo, max(Salario), min(Salario), 
 /*******************************************************************************************/
 /*21. Lista o departamento, o maior salário, o menor salário, a média dos
 salários e a quantidade dos Empregados para cada departamento*/
-select IdDepto, COUNT(IdDepto) as qtdEmpregados, max(Salario), min(Salario), avg(Salario)  from Empregado group by IdDepto ; 
+
+select d.NomeDepto, max(e.Salario), min(e.Salario), avg(e.Salario), count(d.IdDepto) as qtdEmpregados from Empregado e inner join Departamento d on d.IdDepto = e.IdDepto group by d.NomeDepto;
 
 /*******************************************************************************************/
 /*******************************************************************************************/
@@ -167,20 +171,21 @@ select IdDepto, COUNT(IdDepto) as qtdEmpregados, max(Salario), min(Salario), avg
 salários e a quantidade dos Empregados para cada departamento,
 considerando somente empregados com salário maior que 1.800*/
 select IdDepto, COUNT(IdDepto) as qtdEmpregados, max(Salario), min(Salario), avg(Salario)  from Empregado where (Salario) > 1800 group by IdDepto; 
+
+select d.NomeDepto, max(e.Salario), min(e.Salario), avg(e.Salario), count(d.IdDepto) as qtdEmpregados from Empregado e  inner join Departamento d on d.IdDepto = e.IdDepto where (e.Salario) > 1800 group by d.NomeDepto;
 /*******************************************************************************************/
 /*******************************************************************************************/
 /*23. Lista o departamento, o cargo, o maior salário, o menor salário, a
 média dos salários e a quantidade dos Empregados para cada cargo dentro de
 cada departamento*/
 
-select IdDepto, Cargo, max(Salario), min(Salario), avg(Salario), count(*) as "QtdEmpregadoPorDeptos" from Empregado group by IdDepto order by COUNT(*);
-
+select d.NomeDepto, e.Cargo, max(e.Salario), min(e.Salario), avg(e.Salario), count(*) as qtdEmpregados from Empregado e inner join Departamento d on d.IdDepto = e.IdDepto group by e.Cargo order by count(*);
 /*******************************************************************************************/
 /*24. Lista o departamento, o maior salário, o menor salário, a média dos
 salários e a quantidade dos Empregados, apresentando somente departamentos
 que tenham pelo menos 5 empregados.*/
 
-select IdDepto, Cargo, max(Salario), min(Salario), avg(Salario), count(*) as "QtdEmpregadoPorDeptos" from Empregado group by IdDepto having COUNT(*) > 5;
+select d.NomeDepto, e.Cargo, max(e.Salario), min(e.Salario), avg(e.Salario), count(*) as qtdEmpregados from Empregado e inner join Departamento d on d.IdDepto = e.IdDepto group by e.Cargo having count(*) > 5;
 
 /*******************************************************************************************/
 /*25. Lista o departamento, o maior salário, o menor salário, a média dos
@@ -190,6 +195,8 @@ nessa condição.*/
 
 select IdDepto, Cargo, max(Salario), min(Salario), avg(Salario), count(*) as "QtdEmpregadoPorDeptos" from Empregado where (Salario) > 1400 group by IdDepto having COUNT(*) >= 3;
 
+select d.NomeDepto, e.Cargo, max(e.Salario), min(e.Salario), avg(e.Salario), count(*) as qtdEmpregados from Empregado e inner join Departamento d on d.IdDepto = e.IdDepto where e.Salario > 1400 group by e.Cargo having count(*) > 3;
+
 /*******************************************************************************************/
 /*26. Lista todos os dados dos Empregados que não tem comissão (ausência de
 valor).*/
@@ -198,6 +205,7 @@ select * from Empregado where Comissao IS NULL;
 /*******************************************************************************************/
 /*27. Lista nome e salário dos empregados com salário menor que a média dos
 salários*/
+
 select NomeEmpregado, Salario from Empregado where Salario < (select avg(Salario) from Empregado);
 
 /*******************************************************************************************/
@@ -210,13 +218,12 @@ select distinct IdDepto from Empregado where Salario > (select avg(Salario) from
 /*29. Lista nome e salário dos empregados que tenham o menor salário em seu
 departamento*/
 
-SELECT NomeEmpregado, min(Salario), iddepto FROM Empregado GROUP BY IdDepto;
-ou
-SELECT NomeEmpregado, min(Salario), iddepto FROM Empregado GROUP BY IdDepto having min(Salario);
+select d.IdDepto, d.NomeDepto, e.NomeEmpregado, e.Salario from Empregado e inner join Departamento d on d.IdDepto = e.IdDepto where e.Salario in (select min(salario) from empregado group by IdDepto);
 /*******************************************************************************************/
 /*30. Lista quantos empregados em cada departamento tem salário maior que a
 média de todos os salários*/
 
-select IdDepto, count(*) as QtdEmpregados from Empregado where Salario > (select avg(Salario) from Empregado) group by IdDepto;
+select e.IdDepto, count(*), e.Salario from Empregado e inner Join Departamento d on d.IdDepto = e.IdDepto where e.Salario > (select avg(Salario) from Empregado) group by e.IdDepto;
 
 
+select avg(Salario) from Empregado;
